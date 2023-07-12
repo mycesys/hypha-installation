@@ -143,7 +143,6 @@ services:
       - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
       - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
       - HYPHA_SECRET=${HYPHA_SECRET}
-      - HUB_AUTH_SECRET=${HUB_AUTH_SECRET}
     depends_on:
       hypha-files-db:
         condition: service_healthy
