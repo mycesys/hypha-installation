@@ -185,35 +185,35 @@ docker-compose up -d
 - To learn how to create models, run workflows and more, please take a look at the [user guide](https://mycesys.com/hypha/2023.1/userguide.pdf). If you encounter any errors, check our [Troubleshooting](#5-troubleshooting) section.
 - In this version of the system (2023.1) some administration could be done only with direct API call. You can find bash scripts for this actions in `scripts` directory in this repository or [download them from site](https://mycesys.com/hypha/2023.1/adm_scripts.tar.gz):
 - Extent your license (to obtain a license file please contact us using our website www.mycesys.com)
- 
+
  ```
  scripts/hub-update_license.sh
  ```
 
 - Change password settings
- 
+
  ```
  scripts/hub-update_password_format.sh
  ```
- 
+
 - Change confirmation lifetime
-  
+
 ```
 scripts/hub-update_confirmation_lifetime.sh
 ```
-  
+
 - Create plain Cluster
-  
+
 ```
 scripts/hypha-create_cluster_plain.sh
 ```
-  
+
 - Add Node to Cluster
 
 ```
 scripts/hypha-create_node.sh
 ```
-  
+
 - Add Solver (sample configs could found in `scripts/solvers`)
 
 ```
@@ -317,6 +317,21 @@ cp selfsigned/v3.ext ssl/
   | `AUTH_SECRET`=set_random_long_string_here  | strong password (randomly generated) with length no less than 32 characters |
   | `HYPHA_SECRET`= another_random_long_string_here | strong password (randomly generated) with length no less than 32 characters |
 
+- Email Notifications
+
+  | Key=Value | Description                                         |
+  |-----------------------------------------------------| ----------------- |
+  | `HUB_AUTH_MAIL_SERVER_HOST`=smtp.gmail.com | mail server host                                    |
+  | `HUB_AUTH_MAIL_SERVER_POST`=587  | mail server port                                    |
+  | `HUB_AUTH_MAIL_USERNAME`=no-reply@mycesys.com | user name (email address) of the mail account       |
+  | `HUB_AUTH_MAIL_PASSWORD`=secret | user password (or token) of the mail account        |
+  | `HUB_AUTH_MAIL_PROTOCOL`=smtp  | protocol used for emails transferring               |
+  | `HUB_AUTH_MAIL_SMTP_AUTH`=true | use mail account authentication                     |
+  | `HUB_AUTH_MAIL_TLS_ENABLE`=true | use TLS protocol                                    |
+  | `HUB_AUTH_MAIL_SSL_ENABLE`=false  | use SSL protocol                                    |
+  | `HUB_AUTH_MAIL_FROM`=no-reply@mycesys.com | email address from which notifications will be sent |
+
+
 ### 5. Troubleshooting
 
 #### Common techniques
@@ -399,3 +414,14 @@ iptables -t nat -A POSTROUTING --source yyy.yyy.yyy.yyy  --destination xxx.xxx.x
  extra_hosts:
       - "<HYPHA_PUBLIC_DOMAIN>:yyy.yyy.yyy.yyy"
 ```
+
+### 6. Update from 2023.1 to 2023.2-beta
+
+Before update, we recommend to back up your databases and data from `files/data`.
+
+For update:
+- replace `docker-compose.yml` from new version
+- check your ssl settings in `docker-compose.yml` and replace it if needed
+- run script `hypha-upgrade-2022.1-2022.2-beta.sh` from `hypha-installation/allinone` which perform update your `.env` file. It creates file `env.2023.2-beta`. Please check it carefully and replace your `.env` file with this file.
+
+- run `docker compose pull` ; `docker compose up -d`

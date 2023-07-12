@@ -1,0 +1,7 @@
+rabbitmq.username=${RABBITMQ_USERNAME}
+rabbitmq.password=${RABBITMQ_PASSWORD}
+db.user=${HYPHA_RESOURCE_MANAGER_DB_USERNAME}
+db.password=${HYPHA_RESOURCE_MANAGER_DB_PASSWORD}
+security.jwt.internal.secret=${HYPHA_SECRET}
+common.cipherKey=${HYPHA_COMMON_CIPHER_KEY}
+

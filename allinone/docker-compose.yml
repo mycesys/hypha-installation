@@ -1,18 +1,249 @@
 version: '3.8'
 services:
+  consul:
+    image: consul:1.15.4
+    container_name: consul
+    ports:
+      - "8500:8500"
+    volumes:
+      - ./consul-data:/consul-data
+    command: "agent -server -bootstrap-expect=1 -data-dir=consul-data -ui -client 0.0.0.0"
+
+  vault:
+    image: vault:1.13.3
+    container_name: vault
+    restart: always
+    ports:
+      - "8200:8200"
+      - "8201:8201"
+    environment:
+      VAULT_ADDR: 'https://0.0.0.0:8201'
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./vault-data:/data
+      - ./vault-config:/config
+    command: sh /config/common/start-vault.sh
+    env_file:
+      - ./.env
+    healthcheck:
+      test: 'if [ -z "$$(cat /data/status | grep "#VAULT_CONFIGURED#")" ]; then exit 1; fi'
+      interval: 2s
+      timeout: 5s
+      retries: 20
+
   rabbitmq:
     container_name: "rabbitmq"
     image: rabbitmq:3.10.7-management
     environment:
-      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
-      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
-    volumes:
-      - ./rabbitmq_data:/var/lib/rabbitmq/mnesia/
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     ports:
       # AMQP protocol port
       - '5672:5672'
       # HTTP management UI
       - '15672:15672'
+
+  hub-auth-db:
+    image: postgres:14.3-alpine
+    container_name: hub-auth-db
+    ports:
+      - "6431:5432"
+    environment:
+      POSTGRES_USER: ${HUB_AUTH_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HUB_AUTH_DB_PASSWORD}
+      POSTGRES_DB: authdb
+    volumes:
+      - ./pg_auth/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  hub-auth:
+    image: "mycesys/hub-auth:${HUB_AUTH_VERSION}"
+    container_name: hub-auth
+    restart: on-failure
+    ports:
+      - "8098:8098"
+    deploy:
+      resources:
+        limits:
+          memory: ${HUB_AUTH_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HUB_AUTH_LIMIT_MAX_RAM}
+    volumes:
+      - ./oauth/keys:/oauth/keys
+      - ./auth/user/avatars:/server/data/avatars
+      - ./ssl:/ssl
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://hub-auth-db:5432/authdb
+      - USER_AVATARS_PATH=/server/data/avatars/
+      - OAUTH_KEYS_PATH=/oauth/keys/
+      - HUB_AUTH_SECRET=${HUB_AUTH_SECRET}
+      - HUB_AUTH_MAIL_SERVER_HOST=${HUB_AUTH_MAIL_SERVER_HOST}
+      - HUB_AUTH_MAIL_SERVER_POST=${HUB_AUTH_MAIL_SERVER_POST}
+      - HUB_AUTH_MAIL_USERNAME=${HUB_AUTH_MAIL_USERNAME}
+      - HUB_AUTH_MAIL_PASSWORD=${HUB_AUTH_MAIL_PASSWORD}
+      - HUB_AUTH_MAIL_PROTOCOL=${HUB_AUTH_MAIL_PROTOCOL}
+      - HUB_AUTH_MAIL_SMTP_AUTH=${HUB_AUTH_MAIL_SMTP_AUTH}
+      - HUB_AUTH_MAIL_TLS_ENABLE=${HUB_AUTH_MAIL_TLS_ENABLE}
+      - HUB_AUTH_MAIL_SSL_ENABLE=${HUB_AUTH_MAIL_SSL_ENABLE}
+      - HUB_AUTH_MAIL_FROM=${HUB_AUTH_MAIL_FROM}
+    depends_on:
+      hub-auth-db:
+        condition: service_healthy
+      vault:
+          condition: service_healthy
+
+  hypha-files-db:
+    image: postgres:14.3-alpine
+    container_name: hypha-files-db
+    ports:
+      - "6632:5432"
+    environment:
+      POSTGRES_USER: ${HYPHA_FILES_MANAGER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HYPHA_FILES_MANAGER_DB_PASSWORD}
+      POSTGRES_DB: fmdb
+    volumes:
+      - ./pg_fm/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  hypha-files:
+    image: "mycesys/hypha-files:${HYPHA_FILES_VERSION}"
+    container_name: hypha-files
+    restart: on-failure
+    ports:
+      - "8097:8097"
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_FILES_MANAGER_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_FILES_MANAGER_LIMIT_MAX_RAM}
+    volumes:
+      - ./files/data:/server/data
+      - ./ssh/keys:/ssh/keys
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-files-db:5432/fmdb
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-files-db:5432/fmdb
+      - SSH_DEFAULT_KEY_PATH=/ssh/keys/hypha
+      - STORAGE_LOCAL_PATH=/server/data
+      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
+      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
+      - HYPHA_SECRET=${HYPHA_SECRET}
+      - HUB_AUTH_SECRET=${HUB_AUTH_SECRET}
+    depends_on:
+      hypha-files-db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+
+  hypha-resources-db:
+    image: postgres:14.3-alpine
+    container_name: rm-db
+    ports:
+      - "6432:5432"
+    environment:
+      POSTGRES_USER: ${HYPHA_RESOURCE_MANAGER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HYPHA_RESOURCE_MANAGER_DB_PASSWORD}
+      POSTGRES_DB: myc_hypha_rm
+    volumes:
+      - ./pg_rm/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  hypha-resources:
+    image: "mycesys/hypha-resources:${HYPHA_RESOURCES_VERSION}"
+    container_name: hypha-resources
+    restart: on-failure
+    ports:
+      - "8096:8096"
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_RESOURCE_MANAGER_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_RESOURCE_MANAGER_LIMIT_MAX_RAM}
+    volumes:
+      - ./ssh/keys:/ssh/keys
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-resources-db:5432/myc_hypha_rm
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-resources-db:5432/myc_hypha_rm
+      - SSH_DEFAULT_KEY_PATH=/ssh/keys/hypha
+      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
+      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
+      - HYPHA_SECRET=${HYPHA_SECRET}
+      - HUB_AUTH_SECRET=${HUB_AUTH_SECRET}
+    depends_on:
+      hypha-resources-db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+
+  hypha-tasks-db:
+    image: postgres:14.3-alpine
+    container_name: hypha-tasks-db
+    ports:
+      - "6532:5432"
+    environment:
+      POSTGRES_USER: ${HYPHA_TASK_MANAGER_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HYPHA_TASK_MANAGER_DB_PASSWORD}
+      POSTGRES_DB: myc_hypha_tm
+    volumes:
+      - ./pg_tm/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  hypha-tasks:
+    image: "mycesys/hypha-tasks:${HYPHA_TASKS_VERSION}"
+    container_name: hypha-tasks
+    restart: on-failure
+    ports:
+      - "8095:8095"
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_TASK_MANAGER_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_TASK_MANAGER_LIMIT_MAX_RAM}
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-tasks-db:5432/myc_hypha_tm
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-tasks-db:5432/myc_hypha_tm
+      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
+      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
+      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
+      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
+      - HYPHA_SECRET=${HYPHA_SECRET}
+      - HUB_AUTH_SECRET=${HUB_AUTH_SECRET}
+    depends_on:
+      hypha-tasks-db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
 
   hypha-core-db:
     image: postgres:14.3-alpine
@@ -25,238 +256,37 @@ services:
       POSTGRES_DB: coredb
     volumes:
       - ./pg_core/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
   hypha-core:
     image: "mycesys/hypha-core:${HYPHA_CORE_VERSION}"
     container_name: hypha-core
+    restart: on-failure
     ports:
       - "8081:8081"
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_CORE_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_CORE_LIMIT_MAX_RAM}
     volumes:
       - ./core/common/avatars:/server/data/avatars
+    env_file:
+      - ./.env
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-core-db:5432/coredb
       - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-core-db:5432/coredb
-      - SPRING_DATASOURCE_USERNAME=${HYPHA_CORE_DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${HYPHA_CORE_DB_PASSWORD}
-      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
-      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
-      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
-      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
       - AVATAR_ROOT_DIR=/server/data/avatars
-      - SERVICE_FILES_URL=${SERVICE_FILES_URL}
-      - SERVICE_WORKFLOW_URL=${SERVICE_WORKFLOW_URL}
-      - HYPHA_SECRET=${HYPHA_SECRET}
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
     depends_on:
-      - hypha-core-db
-  hypha-files-db:
-    image: postgres:14.3-alpine
-    container_name: hypha-files-db
-    ports:
-      - "6632:5432"
-    environment:
-      POSTGRES_USER: ${HYPHA_FILES_MANAGER_DB_USERNAME}
-      POSTGRES_PASSWORD: ${HYPHA_FILES_MANAGER_DB_PASSWORD}
-      POSTGRES_DB: fmdb
-    volumes:
-      - ./pg_fm/data:/var/lib/postgresql/data
-  hypha-files:
-    image: "mycesys/hypha-files:${HYPHA_FILES_VERSION}"
-    container_name: hypha-files
-    ports:
-      - "8097:8097"
-    volumes:
-      - ./files/data:/server/data
-      - ./ssh/keys:/ssh/keys
-    environment:
-      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-files-db:5432/fmdb
-      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-files-db:5432/fmdb
-      - SPRING_DATASOURCE_USERNAME=${HYPHA_FILES_MANAGER_DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${HYPHA_FILES_MANAGER_DB_PASSWORD}
-      - STORAGE_LOCAL_PATH=/server/data
-      - SSH_DEFAULT_KEY_PATH=/ssh/keys/hypha
-      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
-      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
-      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
-      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
-      - HYPHA_SECRET=${HYPHA_SECRET}
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
-    depends_on:
-      - hypha-files-db
-  hypha-gateway:
-    image: "mycesys/hypha-gateway:${HYPHA_GATEWAY_VERSION}"
-    container_name: hypha-gateway
-    ports:
-      - "8091:8091"
-    environment:
-      - OAUTH_ISSUER_URL=${OAUTH_ISSUER_URL}
-      - SERVICE_CORE_URL=${SERVICE_CORE_URL}
-      - SERVICE_FILES_URL=${SERVICE_FILES_URL}
-      - SERVICE_BFF_URL=${SERVICE_BFF_URL}
-      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
-      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
-      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
-      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
-      - HYPHA_SECRET=${HYPHA_SECRET}
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
-    volumes:
-      - ./ssl:/ssl
-  hub-auth-db:
-    image: postgres:14.3-alpine
-    container_name: hub-auth-db
-    ports:
-      - "6431:5432"
-    environment:
-      POSTGRES_USER: ${HUB_AUTH_DB_USERNAME}
-      POSTGRES_PASSWORD: ${HUB_AUTH_DB_PASSWORD}
-      POSTGRES_DB: authdb
-    volumes:
-      - ./pg_auth/data:/var/lib/postgresql/data
-  hub-auth:
-    image: "mycesys/hub-auth:${HUB_AUTH_VERSION}"
-    container_name: hub-auth
-    ports:
-      - "8098:8098"
-    volumes:
-      - ./oauth/keys:/oauth/keys
-      - ./ssl:/ssl
-      - ./auth/user/avatars:/server/data/avatars
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://hub-auth-db:5432/authdb
-      - SPRING_DATASOURCE_USERNAME=${HUB_AUTH_DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${HUB_AUTH_DB_PASSWORD}
-      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
-      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
-      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
-      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
-      - OAUTH_ISSUER_URL=${OAUTH_ISSUER_URL}
-      - HYPHA_WEB_APP_BASE_URL=${HYPHA_WEB_APP_BASE_URL}
-      - HUB_WEB_APP_BASE_URL=${HUB_WEB_APP_BASE_URL}
-      - FRONTEND_BASE_URL=${FRONTEND_BASE_URL}
-      - ADMIN_PASSWORD=${HUB_ADMIN_PASSWORD}
-      - USER_AVATARS_PATH=/server/data/avatars/
-      - OAUTH_KEYS_PATH=/oauth/keys/
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
-    depends_on:
-      - hub-auth-db
-  hypha-bff:
-    image: "mycesys/hypha-bff:${HYPHA_BFF_VERSION}"
-    container_name: hypha-bff
-    ports:
-      - "8100:8100"
-    environment:
-      - SERVICE_CORE_URL=${SERVICE_CORE_URL}
-      - SERVICE_FILES_URL=${SERVICE_FILES_URL}
-      - SERVICE_WORKFLOW_URL=${SERVICE_WORKFLOW_URL}
-      - SERVICE_TASK_URL=${SERVICE_TASK_URL}
-      - SERVICE_RESOURCE_URL=${SERVICE_RESOURCE_URL}
-      - SERVICE_DASHBOARD_URL=${SERVICE_DASHBOARD_URL}
-      - SERVICE_AUTH_URL=${SERVICE_AUTH_URL}
-      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
-      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
-      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
-      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
-      - HYPHA_SECRET=${HYPHA_SECRET}
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
-  hypha-workflow-db:
-    image: postgres:14.3-alpine
-    container_name: hypha-workflow-db
-    ports:
-      - "6434:5432"
-    environment:
-      POSTGRES_USER: ${HYPHA_WORKFLOW_DB_USERNAME}
-      POSTGRES_PASSWORD: ${HYPHA_WORKFLOW_DB_PASSWORD}
-      POSTGRES_DB: myc_hypha_workflow
-    volumes:
-      - ./pg_workflow/data:/var/lib/postgresql/data
-  hypha-workflow:
-    image: "mycesys/hypha-workflow:${HYPHA_WORKFLOW_VERSION}"
-    container_name: hypha-workflow
-    ports:
-      - "8082:8082"
-    environment:
-      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-workflow-db:5432/myc_hypha_workflow
-      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-workflow-db:5432/myc_hypha_workflow
-      - SPRING_DATASOURCE_USERNAME=${HYPHA_WORKFLOW_DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${HYPHA_WORKFLOW_DB_PASSWORD}
-      - SERVICE_CORE_URL=${SERVICE_CORE_URL}
-      - SERVICE_FILES_URL=${SERVICE_FILES_URL}
-      - SERVICE_TASK_URL=${SERVICE_TASK_URL}
-      - SERVICE_RESOURCE_URL=${SERVICE_RESOURCE_URL}
-      - SERVICE_DASHBOARD_URL=${SERVICE_DASHBOARD_URL}
-      - SERVICE_AUTH_URL=${SERVICE_AUTH_URL}
-      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
-      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
-      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
-      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
-      - HYPHA_SECRET=${HYPHA_SECRET}
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
-    depends_on:
-      - hypha-workflow-db
-  hypha-resources-db:
-    image: postgres:14.3-alpine
-    container_name: hypha-resources-db
-    ports:
-      - "6432:5432"
-    environment:
-      POSTGRES_USER: ${HYPHA_RESOURCE_MANAGER_DB_USERNAME}
-      POSTGRES_PASSWORD: ${HYPHA_RESOURCE_MANAGER_DB_PASSWORD}
-      POSTGRES_DB: myc_hypha_rm
-    volumes:
-      - ./pg_rm/data:/var/lib/postgresql/data
-  hypha-resources:
-    image: "mycesys/hypha-resources:${HYPHA_RESOURCES_VERSION}"
-    container_name: hypha-resources
-    ports:
-      - "8096:8096"
-    volumes:
-      - ./ssh/keys:/ssh/keys
-    environment:
-      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-resources-db:5432/myc_hypha_rm
-      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-resources-db:5432/myc_hypha_rm
-      - SPRING_DATASOURCE_USERNAME=${HYPHA_RESOURCE_MANAGER_DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${HYPHA_RESOURCE_MANAGER_DB_PASSWORD}
-      - SERVICE_CORE_URL=${SERVICE_CORE_URL}
-      - SERVICE_FILES_URL=${SERVICE_FILES_URL}
-      - SSH_DEFAULT_KEY_PATH=/ssh/keys/hypha
-      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
-      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
-      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
-      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
-      - HYPHA_SECRET=${HYPHA_SECRET}
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
-    depends_on:
-      - hypha-resources-db
-  hypha-tasks-db:
-    image: postgres:14.3-alpine
-    container_name: hypha-tasks-db
-    ports:
-      - "6532:5432"
-    environment:
-      POSTGRES_USER: ${HYPHA_TASK_MANAGER_DB_USERNAME}
-      POSTGRES_PASSWORD: ${HYPHA_TASK_MANAGER_DB_PASSWORD}
-      POSTGRES_DB: myc_hypha_tm
-    volumes:
-      - ./pg_tm/data:/var/lib/postgresql/data
-  hypha-tasks:
-    image: "mycesys/hypha-tasks:${HYPHA_TASKS_VERSION}"
-    container_name: hypha-tasks
-    ports:
-      - "8095:8095"
-    environment:
-      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-tasks-db:5432/myc_hypha_tm
-      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-tasks-db:5432/myc_hypha_tm
-      - SPRING_DATASOURCE_USERNAME=${HYPHA_TASK_MANAGER_DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${HYPHA_TASK_MANAGER_DB_PASSWORD}
-      - SPRING_RABBITMQ_HOST=${RABBITMQ_HOST}
-      - SPRING_RABBITMQ_PORT=${RABBITMQ_PORT}
-      - SPRING_RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
-      - SPRING_RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
-      - SERVICE_FILES_URL=${SERVICE_FILES_URL}
-      - SERVICE_RESOURCE_URL=${SERVICE_RESOURCE_URL}
-      - HYPHA_SECRET=${HYPHA_SECRET}
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
-    depends_on:
-      - hypha-tasks-db
+      hypha-core-db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
   hypha-dashboard-db:
     image: postgres:14.3-alpine
     container_name: hypha-dashboard-db
@@ -268,21 +298,136 @@ services:
       POSTGRES_DB: myc_hypha_dashboard
     volumes:
       - ./pg_dashboard/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
 
   hypha-dashboard:
     image: "mycesys/hypha-dashboard:${HYPHA_DASHBOARD_VERSION}"
     container_name: hypha-dashboard
+    restart: on-failure
     ports:
       - "8083:8083"
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_DASHBOARD_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_DASHBOARD_LIMIT_MAX_RAM}
+    env_file:
+      - ./.env
     environment:
       - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-dashboard-db:5432/myc_hypha_dashboard
       - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-dashboard-db:5432/myc_hypha_dashboard
-      - SPRING_DATASOURCE_USERNAME=${HYPHA_DASHBOARD_DB_USERNAME}
-      - SPRING_DATASOURCE_PASSWORD=${HYPHA_DASHBOARD_DB_PASSWORD}
       - HYPHA_SECRET=${HYPHA_SECRET}
-      - AUTH_SECRET=${HUB_AUTH_SECRET}
+      - HUB_AUTH_SECRET=${HUB_AUTH_SECRET}
     depends_on:
-      - hypha-dashboard-db
+      hypha-dashboard-db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+
+  hypha-workflow-db:
+    image: postgres:14.3-alpine
+    container_name: hypha-workflow-db
+    ports:
+      - "6434:5432"
+    environment:
+      POSTGRES_USER: ${HYPHA_WORKFLOW_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HYPHA_WORKFLOW_DB_PASSWORD}
+      POSTGRES_DB: myc_hypha_workflow
+    volumes:
+      - ./pg_workflow/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  hypha-workflow:
+    image: "mycesys/hypha-workflow:${HYPHA_WORKFLOW_VERSION}"
+    container_name: hypha-workflow
+    restart: on-failure
+    ports:
+      - "8082:8082"
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_WORKFLOW_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_WORKFLOW_LIMIT_MAX_RAM}
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-workflow-db:5432/myc_hypha_workflow
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-workflow-db:5432/myc_hypha_workflow
+    depends_on:
+      hypha-workflow-db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+
+  hypha-bff-db:
+    image: postgres:14.3-alpine
+    container_name: hypha-bff-db
+    ports:
+      - "6436:5432"
+    environment:
+      POSTGRES_USER: ${HYPHA_BFF_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HYPHA_BFF_DB_PASSWORD}
+      POSTGRES_DB: myc_hypha_bff
+    volumes:
+      - ./pg_bff/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+
+  hypha-bff:
+    image: "mycesys/hypha-bff:${HYPHA_BFF_VERSION}"
+    container_name: hypha-bff
+    restart: on-failure
+    ports:
+      - "8100:8100"
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_BFF_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_BFF_LIMIT_MAX_RAM}
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://bff-db:5432/myc_hypha_bff
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://bff-db:5432/myc_hypha_bff
+    depends_on:
+      hypha-bff-db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+
+  hypha-gateway:
+    image: "mycesys/hypha-gateway:${HYPHA_GATEWAY_VERSION}"
+    container_name: hypha-gateway
+    restart: on-failure
+    ports:
+      - "8091:8091"
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_APP_GW_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_APP_GW_LIMIT_MAX_RAM}
+    env_file:
+      - ./.env
+    depends_on:
+      vault:
+        condition: service_healthy
+    volumes:
+      - ./ssl:/ssl
 
   hypha-ui:
     container_name: hypha-ui
@@ -293,6 +438,9 @@ services:
       - ./nginx.hypha_frontend.example.conf:/etc/nginx/conf.d/hypha.conf
       - ./ssl:/etc/ssl
     restart: always
+    depends_on:
+      - hub-auth
+      - hypha-gateway
 
   hub-ui:
     container_name: hub-ui
@@ -303,3 +451,6 @@ services:
       - ./nginx.hub_frontend.example.conf:/etc/nginx/conf.d/hub.conf
       - ./ssl:/etc/ssl
     restart: always
+    depends_on:
+      - hub-auth
+

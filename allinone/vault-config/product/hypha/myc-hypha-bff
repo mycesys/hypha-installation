@@ -1,0 +1,6 @@
+rabbitmq.username=${RABBITMQ_USERNAME}
+rabbitmq.password=${RABBITMQ_PASSWORD}
+db.user=${HYPHA_BFF_DB_USERNAME}
+db.password=${HYPHA_BFF_DB_PASSWORD}
+security.jwt.auth.secret=${HUB_AUTH_SECRET}
+security.jwt.internal.secret=${HYPHA_SECRET}
