@@ -1,0 +1,13 @@
+spring.rabbitmq.username=${RABBITMQ_USERNAME}
+spring.rabbitmq.password=${RABBITMQ_PASSWORD}
+jdbc.user=${HUB_AUTH_DB_USERNAME}
+jdbc.password=${HUB_AUTH_DB_PASSWORD}
+security.jwt.auth.secret=${HUB_AUTH_SECRET}
+
+account.default.admin.password=${HUB_ADMIN_PASSWORD}
+
+spring.mail.username=${HUB_AUTH_MAIL_USERNAME}
+spring.mail.password=${HUB_AUTH_MAIL_PASSWORD}
+
+notification.cipherKey=${HUB_AUTH_NOTIFICATION_CIPHER_KEY}
+

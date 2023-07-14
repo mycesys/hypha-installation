@@ -1,0 +1,5 @@
+rabbitmq.username=${RABBITMQ_USERNAME}
+rabbitmq.password=${RABBITMQ_PASSWORD}
+db.user=${HYPHA_DASHBOARD_DB_USERNAME}
+db.password=${HYPHA_DASHBOARD_DB_PASSWORD}
+security.jwt.internal.secret=${HYPHA_SECRET}
