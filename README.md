@@ -1,13 +1,6 @@
 ## Introduction
 
-- Website: https://mycesys.com
-- What is Hypha:
-
-Hypha is a SPDM system that allows to manage data and simulations, run computational tasks and process the results. First enterprise level system available for teams up to 5 users for free.
-
-- User guide: https://mycesys.com/hypha/2023.2/userguide.pdf
-- Installation guide: https://github.com/mycesys/hypha-installation
-- Docker images: https://hub.docker.com/u/mycesys
+Polimat is a SPDM system that allows to manage data and simulations, run computational tasks and process the results. This enterprise level system available for teams up to 5 users for free.
 
 ## Installation
 
@@ -31,7 +24,7 @@ Hypha is a SPDM system that allows to manage data and simulations, run computati
 
 ### 1. Requrements
 
-This is a recommended configuration for basic installation. If you need requirements based on your environment and team size please contact us by: [hypha@mycesys.com](mailto:hypha@mycesys.com).
+This is a recommended configuration for basic installation. If you need requirements based on your environment and team size please contact us by: [polimat@crplab.ru](mailto:polimat@crplab.ru).
 
 #### Hardware
 
@@ -94,7 +87,7 @@ This is a recommended configuration for basic installation. If you need requirem
   - To download current repository content use this command (or clone it with `git`):
 
 ```bash
-wget https://github.com/mycesys/hypha-installation/archive/refs/heads/main.zip
+wget https://github.com/crplab/polimat-installation/archive/refs/heads/main.zip
 ```
 
 **NEXT STEPS SHOULD BE EXECUTED IN `hypha-installation/allinone` directory**
@@ -182,7 +175,7 @@ docker compose up -d
 - After successful login you will be redirected to Dashboard page
 - To learn how to create models, run workflows and more, please take a look at the [user guide](https://mycesys.com/hypha/2023.1/userguide.pdf). If you encounter any errors, check our [Troubleshooting](#5-troubleshooting) section.
 - In this version of the system (2023.2) some administration actions could be done only with direct API call. You can find bash scripts for this actions in `scripts` directory in this repository or [download them from site](https://mycesys.com/hypha/2023.1/adm_scripts.tar.gz):
-- Extent your license (to obtain a license file please contact us using our website www.mycesys.com)
+- Extent your license (to obtain a license file please contact us using our website www.crplab.ru)
 
  ```bash
  scripts/hub-add_license_users.sh
