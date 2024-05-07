@@ -15,7 +15,7 @@ Polimat is a SPDM system that allows to manage data and simulations, run computa
 -  [Generate and use self-signed SSL certificate](#generate-and-use-self-signed-ssl-certificate)
 -  [Install Hypha on several nodes](#install-hypha-on-several-nodes)
 4. [Technical details](#4-technical-details)
-- [Arhcitecture](#architecture)
+- [Arсhitecture](#architecture)
 - [Directories](#list-of-directories)
 - [Environment configuration](#environment-configuration)
 5. [Troubleshooting](#5-troubleshooting)
