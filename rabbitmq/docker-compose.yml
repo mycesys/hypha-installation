@@ -1,7 +1,7 @@
 services:
   rabbitmq:
     container_name: "rabbitmq"
-    image: rabbitmq:3.10.7-management
+    image: rabbitmq:4.1.1-management
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USERNAME}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
@@ -11,7 +11,8 @@ services:
       # HTTP management UI
       - '15672:15672'
     volumes:
-      - ./rabbitmq:/var/lib/rabbitmq
+      - ./rabbitmq/data:/var/lib/rabbitmq/
+      - ./rabbitmq/logs:/var/log/rabbitmq/
     healthcheck:
       test: rabbitmq-diagnostics check_port_connectivity
       interval: 10s

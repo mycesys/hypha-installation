@@ -11,7 +11,7 @@ services:
     volumes:
       - ./pg_3d_service/data:/var/lib/postgresql/data
     ports:
-      - 6432:5432
+      - 6332:5432
     healthcheck:
       test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || pg_isready"
       interval: 5s

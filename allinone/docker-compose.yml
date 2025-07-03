@@ -57,3 +57,7 @@ include:
   # Hub UI
   - path: ../hub-ui/docker-compose.yml
     project_directory: ../allinone
+
+  # 3D Service
+  - path: ../3d-service/docker-compose.yml
+    project_directory: ../allinone
