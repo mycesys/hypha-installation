@@ -12,3 +12,6 @@ ssh/
 oauth.key
 .idea/
 *.zip
+3d_service/
+allinone/rabbitmq/data/
+allinone/rabbitmq/logs/
