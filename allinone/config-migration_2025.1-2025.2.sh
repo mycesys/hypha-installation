@@ -101,7 +101,9 @@ done
 
 cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/prepare-dirs.sh ./
 cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/docker-compose.yml ./
+cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/licenses/support.default ./licenses/support.default
 cp -r "$UNZIP_DIR"/hypha-installation-2025.2/allinone/vault_config ./
+
 
 #### Creating a backup for existing .env file
 
@@ -127,7 +129,7 @@ echo "Backup environment file: $backupenvfile successfully created"
 
 } >> ${env_file}
 
-sed -i s/dev/prod/ ${env_file}
+sed -i s/PROFILE\=dev/PROFILE\=prod/ ${env_file}
 
 echo "Migration completed. Checking generated environment file..."
 
