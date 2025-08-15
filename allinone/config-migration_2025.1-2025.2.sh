@@ -131,6 +131,22 @@ echo "Backup environment file: $backupenvfile successfully created"
 
 sed -i s/PROFILE\=dev/PROFILE\=prod/ ${env_file}
 
+# Use new nersions
+source dot.env.example
+
+sed -i s/HYPHA_CORE_VERSION=.*/HYPHA_CORE_VERSION="$HYPHA_CORE_VERSION"/ ${env_file}
+sed -i s/HYPHA_FILES_VERSION=.*/HYPHA_FILES_VERSION="$HYPHA_FILES_VERSION"/ ${env_file}
+sed -i s/HYPHA_GATEWAY_VERSION=.*/HYPHA_GATEWAY_VERSION="$HYPHA_GATEWAY_VERSION"/ ${env_file}
+sed -i s/HYPHA_BFF_VERSION=.*/HYPHA_BFF_VERSION="$HYPHA_BFF_VERSION"/ ${env_file}
+sed -i s/HYPHA_WORKFLOW_VERSION=.*/HYPHA_WORKFLOW_VERSION="$HYPHA_WORKFLOW_VERSION"/ ${env_file}
+sed -i s/HYPHA_RESOURCES_VERSION=.*/HYPHA_RESOURCES_VERSION="$HYPHA_RESOURCES_VERSION"/ ${env_file}
+sed -i s/HYPHA_TASKS_VERSION=.*/HYPHA_TASKS_VERSION="$HYPHA_TASKS_VERSION/" ${env_file}
+sed -i s/HYPHA_DASHBOARD_VERSION=.*/HYPHA_DASHBOARD_VERSION="$HYPHA_DASHBOARD_VERSION/" ${env_file}
+sed -i s/HYPHA_UI_VERSION=.*/HYPHA_UI_VERSION="$HYPHA_UI_VERSION/" ${env_file}
+sed -i s/HUB_AUTH_VERSION=.*/HYPHA_UI_VERSION="$HYPHA_UI_VERSION/" ${env_file}
+sed -i s/HUB_UI_VERSION=.*/HUB_UI_VERSION="$HUB_UI_VERSION"/ ${env_file}
+sed -i s/HYPHA_BACKEND_DICTIONARY_VERSION=.*/HYPHA_BACKEND_DICTIONARY_VERSION="$HYPHA_BACKEND_DICTIONARY_VERSION/" ${env_file}
+
 echo "Migration completed. Checking generated environment file..."
 
 #### Check environments
