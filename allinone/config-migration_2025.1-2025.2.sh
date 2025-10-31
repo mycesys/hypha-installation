@@ -19,7 +19,7 @@ show_help() {
   echo "Usage: $0 [OPTIONS]"
   echo
   echo "This script migrates from version 2025.1 to 2025.2."
-  echo "It downloads the new version of the installation script from [GitHub](https://github.com/mycesys/hypha-installation),"
+  echo "It downloads the new version of the installation script from [GitHub](https://github.com/mycesys//hypha-installation),"
   echo "unzips it, and proceeds with the migration."
   echo
   echo "Options:"
@@ -65,7 +65,7 @@ while [ "$#" -gt 0 ]; do
 done
 
 # Check is environment file exists
-if [ -f "${env_file}" ]; then
+if [ -f "$env_file" ]; then
     echo "$env_file will be used as source of previous installation parameters"
 else
     echo "Could not find environment file by path $env_file"
@@ -103,12 +103,12 @@ cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/prepare-dirs.sh ./
 cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/docker-compose.yml ./
 cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/licenses/support.default ./licenses/support.default
 cp -r "$UNZIP_DIR"/hypha-installation-2025.2/allinone/vault_config ./
-
+cp -r "$UNZIP_DIR"/hypha-installation-2025.2/allinone/favicon_simvia.ico ./favicon_simvia.ico
 
 #### Creating a backup for existing .env file
 
-backupenvfile="${env_file}".2025.1-"$(date '+%s')".backup
-cp "${env_file}" "$backupenvfile"
+backupenvfile="$env_file".2025.1-"$(date '+%s')".backup
+cp "$env_file" "$backupenvfile"
 echo "Backup environment file: $backupenvfile successfully created"
 
 #### Prepare new folders
@@ -118,7 +118,6 @@ echo "Backup environment file: $backupenvfile successfully created"
 #### Prepare new environment file
 
 . "${env_file}"
-
 
 {
 
@@ -136,14 +135,14 @@ echo 'FRONTEND_BASE_URL=https://${HUB_PUBLIC_URL}:${HUB_PUBLIC_PORT}'
 echo 'HUB_WEB_APP_BASE_URL=https://${HUB_PUBLIC_URL}:${HUB_PUBLIC_PORT}'
 echo 'HYPHA_WEB_APP_BASE_URL=https://${HYPHA_PUBLIC_URL}:${HYPHA_PUBLIC_PORT}'
 printf '\n'
-echo "HYPHA_WEB_APP_BRANDING_TITLE=Hypha"
-echo "HYPHA_WEB_APP_BRANDING_PREFIX=hypha"
-echo "HUB_WEB_APP_BRANDING_TITLE=Hub"
-echo "GLOBAL_WEB_APP_BRANDING_TITLE=Mycesys"
+echo "HYPHA_WEB_APP_BRANDING_TITLE=Симвиа"
+echo "HYPHA_WEB_APP_BRANDING_PREFIX=simvia"
+echo "HUB_WEB_APP_BRANDING_TITLE=Хаб"
+echo "GLOBAL_WEB_APP_BRANDING_TITLE=ЦРП"
 printf '\n'
-echo "DEFAULT_SYSTEM_LANGUAGE=en"
+echo "DEFAULT_SYSTEM_LANGUAGE=ru"
 printf '\n'
-echo "USERGUIDE_URL=https://mycesys.com/hypha/latest/userguide.pdf"
+echo "USERGUIDE_URL=https://simvia.ru/release_docs/latest/userguide.pdf"
 printf '\n'
 echo "PROFILE=prod"
 echo "CONSUL_HOST=$CONSUL_HOST"
@@ -331,7 +330,7 @@ GLOBAL_WEB_APP_BRANDING_TITLE
 USERGUIDE_URL
 DEFAULT_SYSTEM_LANGUAGE'
 
-. "${env_file}"
+source $env_file
 
 for key in $list_of_envs ; do
     if [[ -z "${!key}" ]]; then
