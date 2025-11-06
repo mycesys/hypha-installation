@@ -106,8 +106,8 @@ cp -r "$UNZIP_DIR"/hypha-installation-2025.2/allinone/vault_config ./
 
 #### Creating a backup for existing .env file
 
-backupenvfile="$env_file".2025.1-"$(date '+%s')".backup
-cp "$env_file" "$backupenvfile"
+backupenvfile="${env_file}".2025.1-"$(date '+%s')".backup
+cp "${env_file}" "$backupenvfile"
 echo "Backup environment file: $backupenvfile successfully created"
 
 #### Prepare new folders
@@ -329,7 +329,7 @@ GLOBAL_WEB_APP_BRANDING_TITLE
 USERGUIDE_URL
 DEFAULT_SYSTEM_LANGUAGE'
 
-source $env_file
+. "${env_file}"
 
 for key in $list_of_envs ; do
     if [[ -z "${!key}" ]]; then
