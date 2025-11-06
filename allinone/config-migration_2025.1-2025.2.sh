@@ -104,7 +104,6 @@ cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/docker-compose.yml ./
 cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/licenses/support.default ./licenses/support.default
 cp -r "$UNZIP_DIR"/hypha-installation-2025.2/allinone/vault_config ./
 
-
 #### Creating a backup for existing .env file
 
 backupenvfile="${env_file}".2025.1-"$(date '+%s')".backup
@@ -118,7 +117,6 @@ echo "Backup environment file: $backupenvfile successfully created"
 #### Prepare new environment file
 
 . "${env_file}"
-
 
 {
 
@@ -240,38 +238,6 @@ echo "HYPHA_3D_SERVICE_SPRING_MAX_FILE_SIZE=2000MB"
 echo "HYPHA_3D_SERVICE_SPRING_MAX_REQUEST_SIZE=2000MB"
 
 } > "${env_file}"
-
-# Use new nersions
-source dot.env.example
-
-sed -i s/HYPHA_CORE_VERSION=.*/HYPHA_CORE_VERSION="$HYPHA_CORE_VERSION"/ ${env_file}
-sed -i s/HYPHA_FILES_VERSION=.*/HYPHA_FILES_VERSION="$HYPHA_FILES_VERSION"/ ${env_file}
-sed -i s/HYPHA_GATEWAY_VERSION=.*/HYPHA_GATEWAY_VERSION="$HYPHA_GATEWAY_VERSION"/ ${env_file}
-sed -i s/HYPHA_BFF_VERSION=.*/HYPHA_BFF_VERSION="$HYPHA_BFF_VERSION"/ ${env_file}
-sed -i s/HYPHA_WORKFLOW_VERSION=.*/HYPHA_WORKFLOW_VERSION="$HYPHA_WORKFLOW_VERSION"/ ${env_file}
-sed -i s/HYPHA_RESOURCES_VERSION=.*/HYPHA_RESOURCES_VERSION="$HYPHA_RESOURCES_VERSION"/ ${env_file}
-sed -i s/HYPHA_TASKS_VERSION=.*/HYPHA_TASKS_VERSION="$HYPHA_TASKS_VERSION/" ${env_file}
-sed -i s/HYPHA_DASHBOARD_VERSION=.*/HYPHA_DASHBOARD_VERSION="$HYPHA_DASHBOARD_VERSION/" ${env_file}
-sed -i s/HYPHA_UI_VERSION=.*/HYPHA_UI_VERSION="$HYPHA_UI_VERSION/" ${env_file}
-sed -i s/HUB_AUTH_VERSION=.*/HYPHA_UI_VERSION="$HYPHA_UI_VERSION/" ${env_file}
-sed -i s/HUB_UI_VERSION=.*/HUB_UI_VERSION="$HUB_UI_VERSION"/ ${env_file}
-sed -i s/HYPHA_BACKEND_DICTIONARY_VERSION=.*/HYPHA_BACKEND_DICTIONARY_VERSION="$HYPHA_BACKEND_DICTIONARY_VERSION/" ${env_file}
-
-# Use new nersions
-source dot.env.example
-
-sed -i s/HYPHA_CORE_VERSION=.*/HYPHA_CORE_VERSION="$HYPHA_CORE_VERSION"/ ${env_file}
-sed -i s/HYPHA_FILES_VERSION=.*/HYPHA_FILES_VERSION="$HYPHA_FILES_VERSION"/ ${env_file}
-sed -i s/HYPHA_GATEWAY_VERSION=.*/HYPHA_GATEWAY_VERSION="$HYPHA_GATEWAY_VERSION"/ ${env_file}
-sed -i s/HYPHA_BFF_VERSION=.*/HYPHA_BFF_VERSION="$HYPHA_BFF_VERSION"/ ${env_file}
-sed -i s/HYPHA_WORKFLOW_VERSION=.*/HYPHA_WORKFLOW_VERSION="$HYPHA_WORKFLOW_VERSION"/ ${env_file}
-sed -i s/HYPHA_RESOURCES_VERSION=.*/HYPHA_RESOURCES_VERSION="$HYPHA_RESOURCES_VERSION"/ ${env_file}
-sed -i s/HYPHA_TASKS_VERSION=.*/HYPHA_TASKS_VERSION="$HYPHA_TASKS_VERSION/" ${env_file}
-sed -i s/HYPHA_DASHBOARD_VERSION=.*/HYPHA_DASHBOARD_VERSION="$HYPHA_DASHBOARD_VERSION/" ${env_file}
-sed -i s/HYPHA_UI_VERSION=.*/HYPHA_UI_VERSION="$HYPHA_UI_VERSION/" ${env_file}
-sed -i s/HUB_AUTH_VERSION=.*/HYPHA_UI_VERSION="$HYPHA_UI_VERSION/" ${env_file}
-sed -i s/HUB_UI_VERSION=.*/HUB_UI_VERSION="$HUB_UI_VERSION"/ ${env_file}
-sed -i s/HYPHA_BACKEND_DICTIONARY_VERSION=.*/HYPHA_BACKEND_DICTIONARY_VERSION="$HYPHA_BACKEND_DICTIONARY_VERSION/" ${env_file}
 
 echo "Migration completed. Checking generated environment file..."
 
