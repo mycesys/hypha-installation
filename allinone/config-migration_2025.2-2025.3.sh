@@ -5,7 +5,7 @@
 set -e
 
 # Default URL of the installation script on GitHub
-GITHUB_URL="https://github.com/mycesys/hypha-installation/archive/refs/heads/2025.3.zip"
+GITHUB_URL="https://github.com/overmind88/hypha-installation/archive/refs/heads/2025.3-test.zip"
 
 NEW_VERSION_SOURCES=2025.3_"$(date '+%s')"
 
