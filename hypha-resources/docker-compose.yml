@@ -20,7 +20,7 @@ services:
       options:
         max-size: "100m"
   hypha-resources:
-    image: "docker.mycesys.org:443/mycesys/hypha-resources:${HYPHA_RESOURCES_VERSION}"
+    image: "mycesys/hypha-resources:${HYPHA_RESOURCES_VERSION}"
     container_name: hypha-resources
     restart: on-failure
     ports:

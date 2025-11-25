@@ -20,7 +20,7 @@ services:
       options:
         max-size: "100m"
   hypha-files:
-    image: "docker.mycesys.org:443/mycesys/hypha-files:${HYPHA_FILES_VERSION}"
+    image: "mycesys/hypha-files:${HYPHA_FILES_VERSION}"
     container_name: hypha-files
     restart: on-failure
     ports:

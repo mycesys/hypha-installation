@@ -1,7 +1,7 @@
 services:
   hub-ui:
     container_name: hub-ui
-    image: "docker.mycesys.org:443/mycesys/hub-ui:${HUB_UI_VERSION}"
+    image: "mycesys/hub-ui:${HUB_UI_VERSION}"
     ports:
       - '${HUB_PUBLIC_PORT}:3001'
     volumes:

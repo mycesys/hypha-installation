@@ -20,7 +20,7 @@ services:
       options:
         max-size: "100m"
   hypha-tags:
-    image: "docker.mycesys.org:443/mycesys/hypha-tags:${HYPHA_TAGS_VERSION}"
+    image: "mycesys/hypha-tags:${HYPHA_TAGS_VERSION}"
     container_name: hypha-tags
     restart: on-failure
     ports:

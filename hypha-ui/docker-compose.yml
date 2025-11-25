@@ -1,7 +1,7 @@
 services:
   hypha-ui:
     container_name: hypha-ui
-    image: "docker.mycesys.org:443/mycesys/hypha-ui:${HYPHA_UI_VERSION}"
+    image: "mycesys/hypha-ui:${HYPHA_UI_VERSION}"
     ports:
       - '${HYPHA_PUBLIC_PORT}:443'
     volumes:

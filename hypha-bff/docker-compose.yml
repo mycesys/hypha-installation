@@ -20,7 +20,7 @@ services:
       options:
         max-size: "100m"
   hypha-bff:
-    image: "docker.mycesys.org:443/mycesys/hypha-bff:${HYPHA_BFF_VERSION}"
+    image: "mycesys/hypha-bff:${HYPHA_BFF_VERSION}"
     container_name: hypha-bff
     restart: on-failure
     ports:

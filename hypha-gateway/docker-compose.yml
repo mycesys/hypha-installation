@@ -1,6 +1,6 @@
 services:
   hypha-gateway:
-    image: "docker.mycesys.org:443/mycesys/hypha-gateway:${HYPHA_GATEWAY_VERSION}"
+    image: "mycesys/hypha-gateway:${HYPHA_GATEWAY_VERSION}"
     container_name: hypha-gateway
     restart: on-failure
     ports:

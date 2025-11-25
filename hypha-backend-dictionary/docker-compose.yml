@@ -1,6 +1,6 @@
 services:
   hypha-backend-dictionary:
-    image: "docker.mycesys.org:443/mycesys/hypha-backend-dictionary:${HYPHA_BACKEND_DICTIONARY_VERSION}"
+    image: "mycesys/hypha-backend-dictionary:${HYPHA_BACKEND_DICTIONARY_VERSION}"
     container_name: hypha-backend-dictionary
     restart: on-failure
     ports:

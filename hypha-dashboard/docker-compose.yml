@@ -20,7 +20,7 @@ services:
       options:
         max-size: "100m"
   hypha-dashboard:
-    image: "docker.mycesys.org:443/mycesys/hypha-dashboard:${HYPHA_DASHBOARD_VERSION}"
+    image: "mycesys/hypha-dashboard:${HYPHA_DASHBOARD_VERSION}"
     container_name: hypha-dashboard
     restart: on-failure
     ports:

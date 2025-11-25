@@ -20,7 +20,7 @@ services:
       options:
         max-size: "100m"
   hypha-tasks:
-    image: "docker.mycesys.org:443/mycesys/hypha-tasks:${HYPHA_TASKS_VERSION}"
+    image: "mycesys/hypha-tasks:${HYPHA_TASKS_VERSION}"
     container_name: hypha-tasks
     restart: on-failure
     ports:

@@ -20,7 +20,7 @@ services:
       options:
         max-size: "100m"
   hub-auth:
-    image: "docker.mycesys.org:443/mycesys/hub-auth:${HUB_AUTH_VERSION}"
+    image: "mycesys/hub-auth:${HUB_AUTH_VERSION}"
     container_name: hub-auth
     restart: on-failure
     ports:
