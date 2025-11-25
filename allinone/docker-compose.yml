@@ -65,3 +65,7 @@ include:
   # Hypha Backend Dictionary
   - path: ../hypha-backend-dictionary/docker-compose.yml
     project_directory: ../allinone
+
+  # Hypha Tags
+  - path: ../hypha-tags/docker-compose.yml
+    project_directory: ../allinone
