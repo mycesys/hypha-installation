@@ -5,7 +5,7 @@
 set -e
 
 # Default URL of the installation script on GitHub
-GITHUB_URL="https://github.com/overmind88/hypha-installation/archive/refs/heads/2025.3-test.zip"
+GITHUB_URL="https://github.com/mycesys/hypha-installation/archive/refs/heads/2025.3.zip"
 
 NEW_VERSION_SOURCES=2025.3_"$(date '+%s')"
 
@@ -141,7 +141,7 @@ echo "HUB_WEB_APP_BRANDING_TITLE=Hub"
 echo "GLOBAL_WEB_APP_BRANDING_TITLE=Mycesys"
 printf '\n'
 echo "DEFAULT_SYSTEM_LANGUAGE=en"
-echo "DEFAULT_SUPERADMIN_EMAIL=admin@mycesys.com"
+echo "DEFAULT_SUPER_ADMIN_EMAIL=admin@mycesys.com"
 printf '\n'
 echo "USERGUIDE_URL=https://mycesys.com/hypha/latest/userguide.pdf"
 echo "HUB_PRODUCT_PRICE_URL=https://mycesys.com/pricing"
@@ -156,19 +156,19 @@ printf '\n'
 echo "DISCOVERY_PREFER_IP=false"
 echo "DISCOVERY_IP_ADDRESS="
 printf '\n'
-echo "HYPHA_CORE_VERSION=2025.3.6"
-echo "HYPHA_FILES_VERSION=2025.3.4"
-echo "HYPHA_GATEWAY_VERSION=2025.3.3"
-echo "HYPHA_BFF_VERSION=2025.3.8"
-echo "HYPHA_WORKFLOW_VERSION=2025.3.7"
-echo "HYPHA_RESOURCES_VERSION=2025.3.11"
+echo "HYPHA_CORE_VERSION=2025.3.5"
+echo "HYPHA_FILES_VERSION=2025.3.3"
+echo "HYPHA_GATEWAY_VERSION=2025.3.4"
+echo "HYPHA_BFF_VERSION=2025.3.16"
+echo "HYPHA_WORKFLOW_VERSION=2025.3.4"
+echo "HYPHA_RESOURCES_VERSION=2025.3.10"
 echo "HYPHA_TASKS_VERSION=2025.3.3"
-echo "HYPHA_DASHBOARD_VERSION=2025.3.2"
-echo "HYPHA_UI_VERSION=2025.3.55"
-echo "HUB_AUTH_VERSION=2025.3.16"
-echo "HUB_UI_VERSION=2025.3.55"
-echo "HYPHA_BACKEND_DICTIONARY_VERSION=2025.3.19"
-echo "HYPHA_TAGS_VERSION=2025.3.4"
+echo "HYPHA_DASHBOARD_VERSION=2025.3.3"
+echo "HYPHA_UI_VERSION=2025.3.77"
+echo "HUB_AUTH_VERSION=2025.3.11"
+echo "HUB_UI_VERSION=2025.3.77"
+echo "HYPHA_BACKEND_DICTIONARY_VERSION=2025.3.7"
+echo "HYPHA_TAGS_VERSION=2025.3.5"
 printf '\n'
 echo "HUB_AUTH_MAIL_SERVER_HOST=$HUB_AUTH_MAIL_SERVER_HOST"
 echo "HUB_AUTH_MAIL_SERVER_POST=$HUB_AUTH_MAIL_SERVER_POST"
