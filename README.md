@@ -106,8 +106,16 @@ HYPHA_INSTALL=/opt/hypha; docker run --name hypha-installer -p 3333:3333 -e HYPH
 Where `/opt/hypha` is the path to installation.  
 And open  http://localhost:3333 address
 
+To stop Hypha installer run
+
+```
+docker kill hypha-installer
+docker rm hypha-installer
+```
+
+
 2.1 Update with Hypha Installer
-You can use hypha-installer to update your existing hypha installation started from version 2025.2
+You can use hypha-installer to update your existing Hypha installation started from version 2025.2
 Just set up your current Hypha installation path as `HYPHA_INSTALL` variable. For example
 
 ```
@@ -608,7 +616,7 @@ If you are using selfsigned certificates:
 
 **Update version**
 
-1. Download `config-migration_2025.2-2025.3.sh` script from the [repository](https://github.com/mycesys/hypha-installation/tree/2025.3/allinone/)
+1. Download `config-migration_2025.2-2025.3.sh` script from the [repository](https://github.com/mycesys/hypha-installation/blob/2025.3/allinone/config-migration_2025.2-2025.3.sh)
 2. Run migration script
 - Run script `config-migration_2025.2-2025.3.sh` in `./allinone` directory
 
