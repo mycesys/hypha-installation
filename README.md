@@ -14,7 +14,9 @@ Hypha is a SPDM system that allows to manage data and simulations, run computati
 ### Table of content
 
 1. [Requirements](#1-requrements)
-2. [Installation](#2-installation-all-in-one)
+2. [Installation with Hypha Installer](#2-installation-with-hypha-installer) 
+2.1 [Update with Hypha Installer](#2-1-update-with-hypha-installer) 
+2.2. [Manual installation (All in one)](#2-1-manual-installation-all-in-one)
  - [Configuration](#configuration)
  - [Run Hypha & Hub](#run-hypha--hub)
  - [First steps](#first-steps)
@@ -82,14 +84,46 @@ This is a recommended configuration for basic installation. If you need requirem
         - If you don't have one you can get it for free from https://letsencrypt.org/ or use self-signed
 
 #### Operating system
-- Theoretically system will run on any operating system that supports docker containers
-- We recommend to use one of this operating systems (tested for installation)
-  - CentOS 7
-  - CentOS 8
-  - Ubuntu 20.04 or newer
+- Any operating system that supports docker containers
 - Installation scripts are now available only for Unix-like operating systems
 
-### 2. Installation (All in one)
+### 2. Installation with Hypha Installer
+ You can use step-by-steb web-based installer to install Hypha
+
+Requirements: 
+- `docker` ([Official installation guide](https://docs.docker.com/engine/install/))
+- `docker compose` ([Official installation guide](https://docs.docker.com/compose/install/linux/))
+
+How to run:
+
+If you need a new installation of Hypha you must run
+
+```
+HYPHA_INSTALL=/opt/hypha; docker run --name hypha-installer -p 3333:3333 -e HYPHA_INSTALL=$HYPHA_INSTALL -v $HYPHA_INSTALL:$HYPHA_INSTALL -v /var/run/docker.sock:/var/run/docker.sock -it mycesys/hypha-installer:2025.3
+
+```
+
+Where `/opt/hypha` is the path to installation.  
+And open  http://localhost:3333 address
+
+To stop Hypha installer run
+
+```
+docker kill hypha-installer
+docker rm hypha-installer
+```
+
+
+2.1 Update with Hypha Installer
+You can use hypha-installer to update your existing Hypha installation started from version 2025.2
+Just set up your current Hypha installation path as `HYPHA_INSTALL` variable. For example
+
+```
+HYPHA_INSTALL=~/hypha; docker run --name hypha-installer -p 3333:3333 -e HYPHA_INSTALL=$HYPHA_INSTALL -v $HYPHA_INSTALL:$HYPHA_INSTALL -v /var/run/docker.sock:/var/run/docker.sock -it mycesys/hypha-installer:2025.3
+
+```
+
+### 2.2. Manual installation (All in one)
 
 **NOTE:** if you already have an installed version of Hypha please check the [Update section](#6-update-existing-installation) of this guide.
 
@@ -582,7 +616,7 @@ If you are using selfsigned certificates:
 
 **Update version**
 
-1. Download `config-migration_2025.2-2025.3.sh` script from the [repository](https://github.com/mycesys/hypha-installation/tree/2025.3/allinone/)
+1. Download `config-migration_2025.2-2025.3.sh` script from the [repository](https://github.com/mycesys/hypha-installation/blob/2025.3/allinone/config-migration_2025.2-2025.3.sh)
 2. Run migration script
 - Run script `config-migration_2025.2-2025.3.sh` in `./allinone` directory
 
