@@ -1,0 +1,58 @@
+services:
+  hypha-tags-db:
+    image: postgres:14.3-alpine
+    container_name: hypha-tags-db
+    ports:
+      - "6437:5432"
+    environment:
+      POSTGRES_USER: ${HYPHA_TAGS_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HYPHA_TAGS_DB_PASSWORD}
+      POSTGRES_DB: myc_hypha_tags
+    volumes:
+      - ./pg_tags/data:/var/lib/postgresql/data
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"
+  hypha-tags:
+    image: "mycesys/hypha-tags:${HYPHA_TAGS_VERSION}"
+    container_name: hypha-tags
+    restart: on-failure
+    ports:
+      - "8054:8054"
+    healthcheck:
+      test: curl -s http://localhost:8054/actuator/health| grep UP || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: ${HYPHA_TAGS_SERVICE_LIMIT_MAX_RAM}
+        reservations:
+          memory: ${HYPHA_TAGS_SERVICE_LIMIT_MAX_RAM}
+    volumes:
+      - ./ssh/keys:/ssh/keys
+    env_file:
+      - ./.env
+    environment:
+      - SPRING_R2DBC_URL=r2dbc:postgresql://hypha-tags-db:5432/myc_hypha_tags
+      - SPRING_LIQUIBASE_URL=jdbc:postgresql://hypha-tags-db:5432/myc_hypha_tags
+    depends_on:
+      hypha-tags-db:
+        condition: service_healthy
+      vault:
+        condition: service_healthy
+      consul:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "100m"

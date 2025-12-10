@@ -1,13 +1,13 @@
 #!/bin/bash
 # This script perform update docker environments for Hypha
-# from version 2025.1 to version 2025.2
+# from version 2025.2 to version 2025.3
 
 set -e
 
 # Default URL of the installation script on GitHub
-GITHUB_URL="https://github.com/mycesys/hypha-installation/archive/refs/heads/2025.2.zip"
+GITHUB_URL="https://github.com/mycesys/hypha-installation/archive/refs/heads/2025.3.zip"
 
-NEW_VERSION_SOURCES=2025.2_"$(date '+%s')"
+NEW_VERSION_SOURCES=2025.3_"$(date '+%s')"
 
 # The filename to save the downloaded zip file as
 ZIP_FILENAME=$NEW_VERSION_SOURCES.zip
@@ -18,13 +18,13 @@ UNZIP_DIR=$NEW_VERSION_SOURCES
 show_help() {
   echo "Usage: $0 [OPTIONS]"
   echo
-  echo "This script migrates from version 2025.1 to 2025.2."
+  echo "This script migrates from version 2025.2 to 2025.3."
   echo "It downloads the new version of the installation script from [GitHub](https://github.com/mycesys/hypha-installation),"
   echo "unzips it, and proceeds with the migration."
   echo
   echo "Options:"
   echo "  -h, --help                 Display this help message and exit."
-  echo "  --archive=path/to/archive  Path to the local archive contains 2025.2 installation scripts."
+  echo "  --archive=path/to/archive  Path to the local archive contains 2025.3 installation scripts."
   echo "  --env=path/to/.env         Path to the existing .env configuration file."
   echo
   echo "If there is no connection to GitHub, the script can accept the archive as a named parameter."
@@ -32,9 +32,9 @@ show_help() {
   echo
   echo "Examples:"
   echo "  $0                                               # Downloads from GitHub and proceeds with migration"
-  echo "  $0 --archive=2025.2.zip                     # Uses provided zip file for migration"
+  echo "  $0 --archive=2025.3.zip                     # Uses provided zip file for migration"
   echo "  $0 --env=config/.env                             # Specifies path to .env file"
-  echo "  $0 --archive=2025.2.zip --env=config/.env   # Specifies path to .env file"
+  echo "  $0 --archive=2025.3.zip --env=config/.env   # Specifies path to .env file"
 }
 
 # Default paths
@@ -95,19 +95,19 @@ echo "Running migration..."
 
 #### Copy new version of required files from new installation scripts
 
-for i in 3d-service hub-auth hub-ui hypha-backend-dictionary hypha-bff hypha-core hypha-dashboard hypha-files hypha-gateway hypha-resources hypha-tasks hypha-ui hypha-workflow rabbitmq consul vault; do
-  \cp -rf "$UNZIP_DIR"/hypha-installation-2025.2/$i/. ../$i
+for i in hypha-tags vault; do
+  \cp -rf "$UNZIP_DIR"/hypha-installation-2025.3/$i/. ../$i
 done
 
-cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/prepare-dirs.sh ./
-cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/docker-compose.yml ./
-cp "$UNZIP_DIR"/hypha-installation-2025.2/allinone/licenses/support.default ./licenses/support.default
-cp -r "$UNZIP_DIR"/hypha-installation-2025.2/allinone/vault_config ./
+cp "$UNZIP_DIR"/hypha-installation-2025.3/allinone/prepare-dirs.sh ./
+cp "$UNZIP_DIR"/hypha-installation-2025.3/allinone/docker-compose.yml ./
+cp "$UNZIP_DIR"/hypha-installation-2025.3/allinone/licenses/support.default ./licenses/support.default
+cp -r "$UNZIP_DIR"/hypha-installation-2025.3/allinone/vault_config ./
 
 
 #### Creating a backup for existing .env file
 
-backupenvfile="${env_file}".2025.1-"$(date '+%s')".backup
+backupenvfile="${env_file}".2025.2-"$(date '+%s')".backup
 cp "${env_file}" "$backupenvfile"
 echo "Backup environment file: $backupenvfile successfully created"
 
@@ -141,8 +141,10 @@ echo "HUB_WEB_APP_BRANDING_TITLE=Hub"
 echo "GLOBAL_WEB_APP_BRANDING_TITLE=Mycesys"
 printf '\n'
 echo "DEFAULT_SYSTEM_LANGUAGE=en"
+echo "DEFAULT_SUPER_ADMIN_EMAIL=admin@mycesys.com"
 printf '\n'
 echo "USERGUIDE_URL=https://mycesys.com/hypha/latest/userguide.pdf"
+echo "HUB_PRODUCT_PRICE_URL=https://mycesys.com/pricing"
 printf '\n'
 echo "PROFILE=prod"
 echo "CONSUL_HOST=$CONSUL_HOST"
@@ -154,18 +156,19 @@ printf '\n'
 echo "DISCOVERY_PREFER_IP=false"
 echo "DISCOVERY_IP_ADDRESS="
 printf '\n'
-echo "HYPHA_CORE_VERSION=2025.2.6"
-echo "HYPHA_FILES_VERSION=2025.2.4"
-echo "HYPHA_GATEWAY_VERSION=2025.2.3"
-echo "HYPHA_BFF_VERSION=2025.2.8"
-echo "HYPHA_WORKFLOW_VERSION=2025.2.7"
-echo "HYPHA_RESOURCES_VERSION=2025.2.11"
-echo "HYPHA_TASKS_VERSION=2025.2.3"
-echo "HYPHA_DASHBOARD_VERSION=2025.2.2"
-echo "HYPHA_UI_VERSION=2025.2.55"
-echo "HUB_AUTH_VERSION=2025.2.16"
-echo "HUB_UI_VERSION=2025.2.55"
-echo "HYPHA_BACKEND_DICTIONARY_VERSION=2025.2.19"
+echo "HYPHA_CORE_VERSION=2025.3.5"
+echo "HYPHA_FILES_VERSION=2025.3.3"
+echo "HYPHA_GATEWAY_VERSION=2025.3.4"
+echo "HYPHA_BFF_VERSION=2025.3.16"
+echo "HYPHA_WORKFLOW_VERSION=2025.3.6"
+echo "HYPHA_RESOURCES_VERSION=2025.3.10"
+echo "HYPHA_TASKS_VERSION=2025.3.3"
+echo "HYPHA_DASHBOARD_VERSION=2025.3.3"
+echo "HYPHA_UI_VERSION=2025.3.89"
+echo "HUB_AUTH_VERSION=2025.3.11"
+echo "HUB_UI_VERSION=2025.3.89"
+echo "HYPHA_BACKEND_DICTIONARY_VERSION=2025.3.8"
+echo "HYPHA_TAGS_VERSION=2025.3.5"
 printf '\n'
 echo "HUB_AUTH_MAIL_SERVER_HOST=$HUB_AUTH_MAIL_SERVER_HOST"
 echo "HUB_AUTH_MAIL_SERVER_POST=$HUB_AUTH_MAIL_SERVER_POST"
@@ -184,6 +187,7 @@ echo "HYPHA_RESOURCE_MANAGER_LIMIT_MAX_RAM=2048m"
 echo "HYPHA_FILES_MANAGER_LIMIT_MAX_RAM=2048m"
 echo "HYPHA_DASHBOARD_LIMIT_MAX_RAM=1024m"
 echo "HYPHA_APP_GW_LIMIT_MAX_RAM=1024m"
+echo "HYPHA_TAGS_SERVICE_LIMIT_MAX_RAM=1024m"
 printf '\n'
 echo "HYPHA_RESOURCE_MANAGER_CLUSTER_REFRESH_PERIOD_MS=60000"
 printf '\n'
@@ -228,8 +232,10 @@ echo "HYPHA_FILES_MANAGER_DB_USERNAME=$HYPHA_FILES_MANAGER_DB_USERNAME"
 echo "HYPHA_FILES_MANAGER_DB_PASSWORD=$HYPHA_FILES_MANAGER_DB_PASSWORD"
 echo "HYPHA_DASHBOARD_DB_USERNAME=$HYPHA_DASHBOARD_DB_USERNAME"
 echo "HYPHA_DASHBOARD_DB_PASSWORD=$HYPHA_DASHBOARD_DB_PASSWORD"
-echo "HYPHA_3D_SERVICE_DB_USERNAME=models"
-echo "HYPHA_3D_SERVICE_DB_PASSWORD=models"
+echo "HYPHA_3D_SERVICE_DB_USERNAME=$HYPHA_3D_SERVICE_DB_USERNAME"
+echo "HYPHA_3D_SERVICE_DB_PASSWORD=$HYPHA_3D_SERVICE_DB_PASSWORD"
+echo "HYPHA_TAGS_DB_USERNAME=postgres"
+echo "HYPHA_TAGS_DB_PASSWORD=postgres"
 printf '\n'
 echo "STL_SERVICE_BASE_URL=http://3d-service:8080/rest/v1/models"
 printf '\n'
