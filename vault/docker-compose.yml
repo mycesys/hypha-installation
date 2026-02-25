@@ -4,8 +4,8 @@ services:
     container_name: vault
     restart: always
     ports:
-      - "8200:8200"
-      - "8201:8201"
+      - "127.0.0.1:8200:8200"
+      - "127.0.0.1:8201:8201"
     environment:
       VAULT_ADDR: 'https://0.0.0.0:8201'
     cap_add:

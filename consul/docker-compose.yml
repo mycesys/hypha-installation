@@ -3,7 +3,7 @@ services:
     image: consul:1.15.4
     container_name: consul
     ports:
-      - "8500:8500"
+      - "127.0.0.1:8500:8500"
     volumes:
       - ./consul_config:/consul_config
     command: sh /consul_config/start-consul.sh

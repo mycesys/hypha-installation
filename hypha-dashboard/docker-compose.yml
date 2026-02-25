@@ -1,15 +1,15 @@
 services:
   hypha-dashboard-db:
-    image: postgres:14.3-alpine
+    image: postgres:18.2-alpine
     container_name: hypha-dashboard-db
     ports:
-      - "6435:5432"
+      - "127.0.0.1:6435:5432"
     environment:
       POSTGRES_USER: ${HYPHA_DASHBOARD_DB_USERNAME}
       POSTGRES_PASSWORD: ${HYPHA_DASHBOARD_DB_PASSWORD}
       POSTGRES_DB: myc_hypha_dashboard
     volumes:
-      - ./pg_dashboard/data:/var/lib/postgresql/data
+      - ./pg_dashboard/data:/var/lib/postgresql
     healthcheck:
       test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || pg_isready"
       interval: 5s
@@ -24,7 +24,7 @@ services:
     container_name: hypha-dashboard
     restart: on-failure
     ports:
-      - "8083:8083"
+      - "127.0.0.1:8083:8083"
     healthcheck:
       test: curl -s http://localhost:8083/actuator/health| grep UP || exit 1
       interval: 10s

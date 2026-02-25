@@ -1,15 +1,15 @@
 services:
   hypha-files-db:
-    image: postgres:14.3-alpine
+    image: postgres:18.2-alpine
     container_name: hypha-files-db
     ports:
-      - "6632:5432"
+      - "127.0.0.1:6632:5432"
     environment:
       POSTGRES_USER: ${HYPHA_FILES_MANAGER_DB_USERNAME}
       POSTGRES_PASSWORD: ${HYPHA_FILES_MANAGER_DB_PASSWORD}
       POSTGRES_DB: fmdb
     volumes:
-      - ./pg_fm/data:/var/lib/postgresql/data
+      - ./pg_fm/data:/var/lib/postgresql
     healthcheck:
       test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || pg_isready"
       interval: 5s
@@ -24,7 +24,7 @@ services:
     container_name: hypha-files
     restart: on-failure
     ports:
-      - "8097:8097"
+      - "127.0.0.1:8097:8097"
     healthcheck:
       test: curl -s http://localhost:8097/actuator/health| grep UP || exit 1
       interval: 10s
