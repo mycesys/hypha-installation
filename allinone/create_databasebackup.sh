@@ -1,5 +1,6 @@
 #!/bin/bash
 
+rm -f .dumpbackupdir
 # Check postgres version
 if grep -q "postgres:18" ../**/docker-compose.yml && ! grep -q "postgres:14" ../**/docker-compose.yml; then
     echo "PostgreSQL is already updated to 18. No update is required."
