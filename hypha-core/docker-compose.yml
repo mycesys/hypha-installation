@@ -1,15 +1,15 @@
 services:
   hypha-core-db:
-    image: postgres:14.3-alpine
+    image: postgres:18.2-alpine
     container_name: hypha-core-db
     ports:
-      - "6433:5432"
+      - "127.0.0.1:6433:5432"
     environment:
       POSTGRES_USER: ${HYPHA_CORE_DB_USERNAME}
       POSTGRES_PASSWORD: ${HYPHA_CORE_DB_PASSWORD}
       POSTGRES_DB: coredb
     volumes:
-      - ./pg_core/data:/var/lib/postgresql/data
+      - ./pg_core/data:/var/lib/postgresql
     healthcheck:
       test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || pg_isready"
       interval: 5s
@@ -24,7 +24,7 @@ services:
     container_name: hypha-core
     restart: on-failure
     ports:
-      - "8081:8081"
+      - "127.0.0.1:8081:8081"
     healthcheck:
       test: curl -s http://localhost:8081/actuator/health| grep UP || exit 1
       interval: 10s
