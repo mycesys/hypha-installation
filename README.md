@@ -99,7 +99,7 @@ How to run:
 If you need a new installation of Hypha you must run
 
 ```
-HYPHA_INSTALL=/opt/hypha; docker run --name hypha-installer -p 3333:3333 -e HYPHA_INSTALL=$HYPHA_INSTALL -v $HYPHA_INSTALL:$HYPHA_INSTALL -v /var/run/docker.sock:/var/run/docker.sock -it mycesys/hypha-installer:2025.3
+HYPHA_INSTALL=/opt/hypha; docker run --name hypha-installer -p 3333:3333 -e HYPHA_INSTALL=$HYPHA_INSTALL -v $HYPHA_INSTALL:$HYPHA_INSTALL -v /var/run/docker.sock:/var/run/docker.sock -it mycesys/hypha-installer:2025.4
 
 ```
 
@@ -119,7 +119,7 @@ You can use hypha-installer to update your existing Hypha installation started f
 Just set up your current Hypha installation path as `HYPHA_INSTALL` variable. For example
 
 ```
-HYPHA_INSTALL=~/hypha; docker run --name hypha-installer -p 3333:3333 -e HYPHA_INSTALL=$HYPHA_INSTALL -v $HYPHA_INSTALL:$HYPHA_INSTALL -v /var/run/docker.sock:/var/run/docker.sock -it mycesys/hypha-installer:2025.3
+HYPHA_INSTALL=~/hypha; docker run --name hypha-installer -p 3333:3333 -e HYPHA_INSTALL=$HYPHA_INSTALL -v $HYPHA_INSTALL:$HYPHA_INSTALL -v /var/run/docker.sock:/var/run/docker.sock -it mycesys/hypha-installer:2025.4
 
 ```
 
