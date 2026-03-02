@@ -5,7 +5,7 @@
 set -e
 
 # Default URL of the installation script on GitHub
-GITHUB_URL="https://github.com/overmind88/hypha-installation/archive/refs/heads/2025.4_1.zip"
+GITHUB_URL="https://github.com/mycesys/hypha-installation/archive/refs/heads/2025.4.zip"
 
 NEW_VERSION_SOURCES=2025.4_"$(date '+%s')"
 
@@ -104,7 +104,7 @@ for i in 3d-service hub-auth hub-ui hypha-backend-dictionary hypha-bff hypha-cor
 done
 
 cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/prepare-dirs.sh ./
-cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/docker-compose.yml ./
+#cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/docker-compose.yml ./
 cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/licenses/support.default ./licenses/support.default
 
 
@@ -361,6 +361,7 @@ if [ "$HUB_PUBLIC_PORT" = "443" ] ; then
   sed -i s/HYPHA_WEB_APP_BASE_URL=.*/HYPHA_WEB_APP_BASE_URL=https\:\\/\\/\$\{HYPHA_PUBLIC_URL\}/ "${env_file}"
 fi
 
+# Restore databases to postgres 18
 ./restore_database.sh
 
 echo "Please check updated environment file before start. File location: $env_file"
