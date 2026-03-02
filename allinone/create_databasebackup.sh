@@ -7,6 +7,23 @@ if grep -q "postgres:18" ../**/docker-compose.yml && ! grep -q "postgres:14" ../
     exit 0
 fi
 
+# Check if pg_* folders writable
+shopt -s nullglob
+for d in pg_*; do
+    if [ -d "$d" ]; then
+        if [ ! -r "$d" ]; then
+            echo "Error: '$d' folder is not readable"
+            exit 1
+        fi
+        if [ ! -w "$d" ]; then
+            echo "Error: '$d' folder is not writable"
+            echo "Try to run: sudo chown -R $(id -u):$(id -g) pg_*"
+            exit 1
+        fi
+    fi
+done
+shopt -u nullglob
+
 DUMPBACKUPDIR=postgres_dump_"$(date +%Y-%m-%d"_"%H-%M-%S)"
 DBBACKUPDIR=postgres_backup_"$(date +%Y-%m-%d"_"%H-%M-%S)"
 mkdir -p  "$DBBACKUPDIR" "$DUMPBACKUPDIR"
