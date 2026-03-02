@@ -1,17 +1,12 @@
 #!/bin/bash
 
-if grep -q "postgres:18" ../**/docker-compose.yml && ! grep -q "postgres:14" ../**/docker-compose.yml; then
-    echo "PostgreSQL is already updated to 18. No update is required."
-    exit 0
-fi
-
 . .env
 
 if [[ -f .dumpbackupdir ]]; then
     source .dumpbackupdir
 else
-    echo ".dumpbackupdir not found"
-    exit 1
+    echo ".dumpbackupdir not found, Do not update"
+    exit 0
 fi
 
 expected_dirs="pg_fm pg_core pg_dashboard pg_tags pg_auth pg_rm pg_3d_service pg_workflow pg_bff pg_tm"

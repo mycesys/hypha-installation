@@ -9,7 +9,6 @@ fi
 DUMPBACKUPDIR=postgres_dump_"$(date +%Y-%m-%d"_"%H-%M-%S)"
 DBBACKUPDIR=postgres_backup_"$(date +%Y-%m-%d"_"%H-%M-%S)"
 mkdir -p  "$DBBACKUPDIR" "$DUMPBACKUPDIR"
-echo "DUMPBACKUPDIR=$DUMPBACKUPDIR" > .dumpbackupdir
 . .env
 
 for i in 3d-service hub-auth hub-ui hypha-backend-dictionary hypha-bff hypha-core hypha-dashboard hypha-files hypha-gateway hypha-resources hypha-tasks hypha-ui hypha-workflow ; do
@@ -82,5 +81,5 @@ if [ "$backup_ok" = false ]; then
   echo "Error: empty backup catalog in $DBBACKUPDIR"
   exit 1
 fi
-
+echo "DUMPBACKUPDIR=$DUMPBACKUPDIR" > .dumpbackupdir
 echo "Backup is done"
