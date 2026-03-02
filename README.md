@@ -14,9 +14,9 @@ Hypha is a SPDM system that allows to manage data and simulations, run computati
 ### Table of content
 
 1. [Requirements](#1-requrements)
-2. [Installation with Hypha Installer](#2-installation-with-hypha-installer) 
-2.1 [Update with Hypha Installer](#2-1-update-with-hypha-installer) 
-2.2. [Manual installation (All in one)](#2-1-manual-installation-all-in-one)
+2. [Installation with Hypha Installer](#2-installation-with-hypha-installer)  
+2.1 [Update with Hypha Installer](#2-1-update-with-hypha-installer)  
+2.2. [Manual installation (All in one)](#2-1-manual-installation-all-in-one)  
  - [Configuration](#configuration)
  - [Run Hypha & Hub](#run-hypha--hub)
  - [First steps](#first-steps)
