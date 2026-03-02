@@ -89,7 +89,7 @@ echo "Unzipping the archive..."
 unzip -q "$archive" -d "$UNZIP_DIR"
 
 cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/prepare-dirs.sh ./
-cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/reate_databasebackup.sh ./
+cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/create_databasebackup.sh ./
 cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/restore_database.sh ./
 
 # Database backup
@@ -102,11 +102,9 @@ echo "Running migration..."
 
 #### Copy new version of required files from new installation scripts
 
-
 for i in 3d-service hub-auth hub-ui hypha-backend-dictionary hypha-bff hypha-core hypha-dashboard hypha-files hypha-gateway hypha-resources hypha-tags hypha-tasks hypha-ui hypha-workflow; do
   \cp -rf "$UNZIP_DIR"/hypha-installation-2025.4/$i/. ../$i
 done
-
 
 #cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/docker-compose.yml ./
 cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/licenses/support.default ./licenses/support.default
