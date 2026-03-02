@@ -4,7 +4,7 @@ services:
     container_name: hypha-backend-dictionary
     restart: on-failure
     ports:
-      - "8090:8090"
+      - "127.0.0.1:8090:8090"
     healthcheck:
       test: curl -s http://localhost:8090/actuator/health| grep UP || exit 1
       interval: 10s

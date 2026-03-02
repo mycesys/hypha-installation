@@ -1,15 +1,15 @@
 services:
   hypha-workflow-db:
-    image: postgres:14.3-alpine
+    image: postgres:18.2-alpine
     container_name: hypha-workflow-db
     ports:
-      - "6434:5432"
+      - "127.0.0.1:6434:5432"
     environment:
       POSTGRES_USER: ${HYPHA_WORKFLOW_DB_USERNAME}
       POSTGRES_PASSWORD: ${HYPHA_WORKFLOW_DB_PASSWORD}
       POSTGRES_DB: myc_hypha_workflow
     volumes:
-      - ./pg_workflow/data:/var/lib/postgresql/data
+      - ./pg_workflow/data:/var/lib/postgresql
     healthcheck:
       test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || pg_isready"
       interval: 5s
@@ -24,7 +24,7 @@ services:
     container_name: hypha-workflow
     restart: on-failure
     ports:
-      - "8082:8082"
+      - "127.0.0.1:8082:8082"
     healthcheck:
       test: curl -s http://localhost:8082/actuator/health| grep UP || exit 1
       interval: 10s

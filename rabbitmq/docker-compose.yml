@@ -7,9 +7,9 @@ services:
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     ports:
       # AMQP protocol port
-      - '5672:5672'
+      - '127.0.0.1:5672:5672'
       # HTTP management UI
-      - '15672:15672'
+      - '127.0.0.1:15672:15672'
     volumes:
       - ./rabbitmq/data:/var/lib/rabbitmq/
       - ./rabbitmq/logs:/var/log/rabbitmq/
