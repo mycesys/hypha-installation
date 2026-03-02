@@ -5,7 +5,7 @@
 if [[ -f .dumpbackupdir ]]; then
     source .dumpbackupdir
 else
-    echo ".dumpbackupdir not found, Do not update"
+    echo ".dumpbackupdir not found. Do not update"
     exit 0
 fi
 
