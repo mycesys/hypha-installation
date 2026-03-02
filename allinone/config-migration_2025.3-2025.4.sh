@@ -88,6 +88,10 @@ fi
 echo "Unzipping the archive..."
 unzip -q "$archive" -d "$UNZIP_DIR"
 
+cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/prepare-dirs.sh ./
+cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/reate_databasebackup.sh ./
+cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/restore_database.sh ./
+
 # Database backup
 ./create_databasebackup.sh
 
@@ -103,7 +107,7 @@ for i in 3d-service hub-auth hub-ui hypha-backend-dictionary hypha-bff hypha-cor
   \cp -rf "$UNZIP_DIR"/hypha-installation-2025.4/$i/. ../$i
 done
 
-cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/prepare-dirs.sh ./
+
 #cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/docker-compose.yml ./
 cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/licenses/support.default ./licenses/support.default
 
