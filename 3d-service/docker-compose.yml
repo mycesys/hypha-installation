@@ -1,7 +1,7 @@
 services:
 
   3d-service-db:
-    image: postgres:14.3-alpine
+    image: postgres:18.2-alpine
     container_name: 3d-service-db
     restart: always
     environment:
@@ -9,9 +9,9 @@ services:
       POSTGRES_PASSWORD: ${HYPHA_3D_SERVICE_DB_PASSWORD}
       POSTGRES_DB: 3dservicedb
     volumes:
-      - ./pg_3d_service/data:/var/lib/postgresql/data
+      - ./pg_3d_service/data:/var/lib/postgresql
     ports:
-      - 6332:5432
+      - 127.0.0.1:6332:5432
     healthcheck:
       test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || pg_isready"
       interval: 5s
@@ -29,7 +29,7 @@ services:
     volumes:
       - ./3d_service/opt/models:/opt/models
     ports:
-      - 8000:8000
+      - 127.0.0.1:8000:8000
     logging:
       driver: "json-file"
       options:
@@ -55,8 +55,8 @@ services:
     volumes:
       - ./3d_service/opt/models:/opt/models
     ports:
-      - 8080:8080
-      - 7000:7000
+      - 127.0.0.1:8080:8080
+      - 127.0.0.1:7000:7000
     logging:
       driver: "json-file"
       options:

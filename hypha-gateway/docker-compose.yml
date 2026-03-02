@@ -4,7 +4,7 @@ services:
     container_name: hypha-gateway
     restart: on-failure
     ports:
-      - "8091:8091"
+      - "127.0.0.1:8091:8091"
     healthcheck:
       test: curl -s http://localhost:8091/actuator/health| grep UP || exit 1
       interval: 10s

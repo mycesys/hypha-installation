@@ -10,9 +10,11 @@ mkdir -p pg_dashboard
 mkdir -p pg_fm
 mkdir -p pg_rm
 mkdir -p pg_tm
+mkdir -p pg_bff
+mkdir -p pg_tags
 mkdir -p pg_workflow
 mkdir -p rabbitmq/data
 mkdir -p rabbitmq/logs
 mkdir -p vault_data
 mkdir -p 3d_service/opt/models
-mkdir -p pg_3d_service/data
+mkdir -p pg_3d_service
