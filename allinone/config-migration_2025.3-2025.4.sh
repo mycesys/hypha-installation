@@ -109,7 +109,6 @@ done
 #cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/docker-compose.yml ./
 cp "$UNZIP_DIR"/hypha-installation-2025.4/allinone/licenses/support.default ./licenses/support.default
 
-
 #### Creating a backup for existing .env file
 
 backupenvfile="${env_file}".2025.3-"$(date '+%s')".backup
