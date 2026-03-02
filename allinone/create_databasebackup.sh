@@ -18,7 +18,7 @@ for i in 3d-service hub-auth hub-ui hypha-backend-dictionary hypha-bff hypha-cor
 done
 
 for i in hypha-files-db hypha-core-db hypha-dashboard-db hypha-tags-db hub-auth-db hypha-resources-db 3d-service-db hypha-workflow-db hypha-bff-db hypha-tasks-db; do
-  echo "Down $i"
+  echo "Start database $i"
   docker compose up -d $i || true
   sleep 5
 done
@@ -52,7 +52,7 @@ dump_db 3d-service-db ${HYPHA_3D_SERVICE_DB_USERNAME} $DUMPBACKUPDIR/3d-service-
 
 
 for i in hypha-files-db hypha-core-db hypha-dashboard-db hypha-tags-db hub-auth-db hypha-resources-db 3d-service-db hypha-workflow-db hypha-bff-db hypha-tasks-db; do
-  echo "Down $i"
+  echo "Down database $i"
   docker compose down $i || true
 done
 
