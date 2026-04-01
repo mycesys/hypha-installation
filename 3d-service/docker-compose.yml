@@ -23,7 +23,7 @@ services:
         max-size: "100m"
 
   freecad:
-    image: mycesys/hypha-freecad-service:2025.1
+    image: mycesys/hypha-freecad-service:${HYPHA_3D_FREECAD_VERSION}
     container_name: 3d-service-freecad
     restart: always
     volumes:
@@ -36,7 +36,7 @@ services:
         max-size: "100m"
 
   3d-service:
-    image: mycesys/hypha-ip-3d-requests-be:2025.1
+    image: mycesys/hypha-ip-3d-requests-be:${HYPHA_3D_SERVICE_VERSION}
     container_name: 3d-service
     restart: always
     environment:
