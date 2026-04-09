@@ -52,10 +52,12 @@ include:
 
   # Hypha UI
   - path: ../hypha-ui/docker-compose.yml
+# - path: ../hypha-ui/docker-compose-nossl.yml
     project_directory: ../allinone
 
   # Hub UI
   - path: ../hub-ui/docker-compose.yml
+# - path: ../hub-ui/docker-compose-nossl.yml
     project_directory: ../allinone
 
   # 3D Service
