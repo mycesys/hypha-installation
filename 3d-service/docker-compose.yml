@@ -24,6 +24,7 @@ services:
 
   freecad:
     image: mycesys/hypha-freecad-service:2025.1
+    container_name: 3d-service-freecad
     restart: always
     volumes:
       - ./3d_service/opt/models:/opt/models
