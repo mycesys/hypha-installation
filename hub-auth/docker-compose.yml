@@ -14,7 +14,7 @@ services:
       test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || pg_isready"
       interval: 5s
       timeout: 2s
-      retries: 5
+      retries: 15
     logging:
       driver: "json-file"
       options:

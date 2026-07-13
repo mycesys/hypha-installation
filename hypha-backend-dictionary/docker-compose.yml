@@ -12,6 +12,11 @@ services:
       retries: 10
     env_file:
       - ./.env
+    depends_on:
+      consul:
+        condition: service_started
+      vault:
+        condition: service_healthy
     logging:
       driver: "json-file"
       options:
