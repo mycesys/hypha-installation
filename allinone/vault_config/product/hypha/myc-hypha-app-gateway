@@ -1,3 +1,4 @@
 spring.rabbitmq.username=${RABBITMQ_USERNAME}
 spring.rabbitmq.password=${RABBITMQ_PASSWORD}
 security.jwt.internal.secret=${HYPHA_SECRET}
+common.cipherKey=${HYPHA_COMMON_CIPHER_KEY}

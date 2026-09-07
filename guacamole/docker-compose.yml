@@ -1,0 +1,43 @@
+services:
+  hypha-guacd:
+    image: guacamole/guacd:1.6.0
+    container_name: hypha-guacd
+    networks:
+      - hypha-guacamole-network
+  hypha-guacamole-client:
+    image: guacamole/guacamole:1.6.0
+    container_name: hypha-guacamole-client
+    networks:
+      - default
+      - hypha-guacamole-network
+    depends_on:
+      - hypha-guacd
+      - hypha-guacamole-db
+    environment:
+      GUACD_HOSTNAME: hypha-guacd
+      POSTGRESQL_DATABASE: guacamole_db
+      POSTGRESQL_HOSTNAME: hypha-guacamole-db
+      POSTGRESQL_PASSWORD: ${HYPHA_GUACAMOLE_DB_PASSWORD}
+      POSTGRESQL_USERNAME: ${HYPHA_GUACAMOLE_DB_USERNAME}
+  hypha-guacamole-db:
+    image: postgres:18.2-alpine
+    container_name: hypha-guacamole-db
+    environment:
+      POSTGRES_USER: ${HYPHA_GUACAMOLE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${HYPHA_GUACAMOLE_DB_PASSWORD}
+      POSTGRES_DB: guacamole_db
+      GUACAMOLE_ADMIN_PASSWORD: ${HYPHA_GUACAMOLE_ADMIN_PASSWORD}
+    volumes:
+      - ./pg_gc/data:/var/lib/postgresql
+      - ../guacamole/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || pg_isready"
+      interval: 5s
+      timeout: 2s
+      retries: 5
+    networks:
+      - default
+      - hypha-guacamole-network
+networks:
+  hypha-guacamole-network:
+    driver: bridge

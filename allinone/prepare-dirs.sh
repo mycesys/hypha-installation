@@ -13,6 +13,7 @@ mkdir -p pg_tm
 mkdir -p pg_bff
 mkdir -p pg_tags
 mkdir -p pg_workflow
+mkdir -p pg_gc
 mkdir -p rabbitmq/data
 mkdir -p rabbitmq/logs
 mkdir -p vault_data
