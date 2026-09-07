@@ -29,7 +29,7 @@ services:
       test: curl -s http://localhost:8098/actuator/health| grep UP || exit 1
       interval: 10s
       timeout: 10s
-      retries: 10
+      retries: 15
     deploy:
       resources:
         limits:

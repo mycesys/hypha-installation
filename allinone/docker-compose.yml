@@ -71,3 +71,7 @@ include:
   # Hypha Tags
   - path: ../hypha-tags/docker-compose.yml
     project_directory: ../allinone
+
+  # Guacamole
+  - path: ../guacamole/docker-compose.yml
+    project_directory: ../allinone

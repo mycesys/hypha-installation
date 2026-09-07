@@ -4,10 +4,11 @@ services:
     image: "mycesys/hypha-ui:${HYPHA_UI_VERSION}"
     ports:
       - '${HYPHA_PUBLIC_PORT}:3000'
-    # volumes:
+     volumes:
     #   #- /etc/letsencrypt_shared:/etc/letsencrypt
     #   - ${PWD}/ssl_cert.conf:/etc/nginx/ssl_cert.conf
     #   - ${PWD}/ssl:/etc/ssl
+      - ${PWD}/nginx.guacamole.conf:/etc/nginx/snippets/nginx.guacamole.conf
     restart: always
     environment:
       CONSUL_HOST: ${CONSUL_HOST}
